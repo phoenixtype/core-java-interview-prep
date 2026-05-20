@@ -28,6 +28,9 @@
 
 ## 1. OOP Fundamentals
 
+> **FAANG Interview Tip:** At Google and Amazon, OOP questions are warm-up rounds — but getting them wrong is an instant red flag. Be crisp. Define each pillar in one sentence, then give a real-world analogy and a code example without hesitation.
+
+
 ### The Four Pillars
 
 OOP is the backbone of Java. Every interview starts here. Think of OOP like building with LEGO: each brick is a class, each structure you build is an object.
@@ -181,7 +184,52 @@ class Child extends Parent {
 
 ---
 
+
+<details>
+<summary><b>Check Yourself — Java Basics</b></summary>
+
+- What happens in memory when you write `String s = new String("hello")`? How many objects are created?
+- Can a `finally` block prevent a `System.exit()` from terminating the JVM?
+- Draw the JVM architecture from memory. Include class loader, execution engine, and all memory areas.
+</details>
+
+**Deep Dive — Read More:**
+- [JVM Architecture (Oracle)](https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-2.html) — official specification
+- [Understanding JVM Internals (Baeldung)](https://www.baeldung.com/jvm-internals) — practical walkthrough
+- [Java Memory Model (Jenkov)](https://jenkov.com/tutorials/java-concurrency/java-memory-model.html) — concurrency-focused
+
+---
+
 ## 2. Java Basics & Memory Model
+
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    JDK (Development Kit)             │
+│  ┌───────────────────────────────────────────────┐  │
+│  │               JRE (Runtime Environment)       │  │
+│  │  ┌─────────────────────────────────────────┐  │  │
+│  │  │              JVM (Virtual Machine)       │  │  │
+│  │  │                                          │  │  │
+│  │  │  ┌──────────┐  ┌────────────────────┐   │  │  │
+│  │  │  │Class     │  │ Runtime Memory     │   │  │  │
+│  │  │  │Loader    │  │ ┌──────┐ ┌──────┐  │   │  │  │
+│  │  │  │System    │  │ │Stack │ │ Heap │  │   │  │  │
+│  │  │  └──────────┘  │ │(per  │ │(shared)│ │   │  │  │
+│  │  │  ┌──────────┐  │ │thread│ │      │  │   │  │  │
+│  │  │  │Execution │  │ └──────┘ └──────┘  │   │  │  │
+│  │  │  │Engine    │  │ ┌──────┐ ┌──────┐  │   │  │  │
+│  │  │  │(JIT +    │  │ │Method│ │  PC  │  │   │  │  │
+│  │  │  │ Interp.) │  │ │ Area │ │Regist│  │   │  │  │
+│  │  │  └──────────┘  │ └──────┘ └──────┘  │   │  │  │
+│  │  │                └────────────────────┘   │  │  │
+│  │  └─────────────────────────────────────────┘  │  │
+│  │  + Standard Libraries (java.lang, java.util)  │  │
+│  └───────────────────────────────────────────────┘  │
+│  + javac, jdb, jar, javadoc tools                   │
+└─────────────────────────────────────────────────────┘
+```
+
 
 ### 2.1 JVM, JRE, JDK
 
@@ -194,6 +242,28 @@ class Child extends Parent {
 ---
 
 ### 2.2 Heap vs Stack Memory
+
+
+```
+  STACK (per thread)              HEAP (shared across threads)
+ ┌──────────────────┐           ┌──────────────────────────────┐
+ │ main()           │           │                              │
+ │  int x = 10      │           │  ┌────────────────────┐      │
+ │  Dog d ──────────┼──────────►│  │ Dog object         │      │
+ │                  │           │  │  name = "Rex"      │      │
+ ├──────────────────┤           │  │  age = 5           │      │
+ │ calculate()      │           │  └────────────────────┘      │
+ │  int result = 42 │           │                              │
+ │  String s ───────┼──────────►│  ┌─────────────────┐        │
+ │                  │           │  │ "Hello" (String) │        │
+ └──────────────────┘           │  └─────────────────┘        │
+                                └──────────────────────────────┘
+  • Primitives live here          • Objects live here
+  • Fast (LIFO)                   • Slower (GC managed)
+  • Thread-safe                   • Shared = needs sync
+  • StackOverflowError            • OutOfMemoryError
+```
+
 
 | | Stack | Heap |
 |---|---|---|
@@ -272,7 +342,25 @@ try {
 
 ---
 
+
+<details>
+<summary><b>Check Yourself — Strings</b></summary>
+
+- How many objects are in the String Pool after: `String a = "hello"; String b = "hello"; String c = new String("hello");`?
+- Why is `StringBuilder` faster than `String` concatenation in a loop? What's happening under the hood?
+- Can you modify a String using reflection? Should you? What breaks?
+</details>
+
+**Deep Dive — Read More:**
+- [String Pool in Java (Baeldung)](https://www.baeldung.com/java-string-pool)
+- [Why String is Immutable (JavaTechie)](https://www.youtube.com/watch?v=Bj9Mx_Lx3q4)
+
+---
+
 ## 3. String & Immutability
+
+> **Real Interview Scenario (Amazon):** "You have a method that concatenates strings in a loop 100,000 times. The candidate before you used `+=` and it took 30 seconds. How would you fix it and explain why the original approach was slow?" — This tests String Pool, immutability, and StringBuilder knowledge simultaneously.
+
 
 ### 3.1 Why is String Immutable?
 
@@ -332,7 +420,59 @@ System.out.println(a == d);  // true
 
 ---
 
+
+<details>
+<summary><b>Check Yourself — Collections</b></summary>
+
+- When does HashMap convert a linked list bucket to a red-black tree? When does it convert back?
+- What is the time complexity of `TreeMap.get()` vs `HashMap.get()`? Why would you ever choose TreeMap?
+- What happens if you modify a `HashSet` element's `hashCode()` after inserting it?
+</details>
+
+**Deep Dive — Read More:**
+- [HashMap Internals (Baeldung)](https://www.baeldung.com/java-hashmap-advanced) — deep dive
+- [ConcurrentHashMap (Oracle)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/ConcurrentHashMap.html)
+- [When to Use Which Collection (Java Brains)](https://www.youtube.com/watch?v=GhslBwLRm6s)
+
+---
+
 ## 4. Collections Framework
+
+
+```
+                       java.util Collection Hierarchy
+
+                            Iterable<E>
+                               │
+                          Collection<E>
+                       ┌───────┼────────┐
+                       │       │        │
+                    List<E>  Set<E>   Queue<E>
+                       │       │        │
+              ┌────────┤    ┌──┤     ┌──┴──┐
+              │        │    │  │     │     │
+          ArrayList LinkedList HashSet TreeSet PriorityQueue Deque
+                                │                          │
+                           LinkedHashSet              ArrayDeque
+
+                            Map<K,V>  (separate hierarchy)
+                       ┌───────┼────────┐
+                       │       │        │
+                   HashMap  TreeMap  LinkedHashMap
+                       │
+                  ConcurrentHashMap
+
+   ┌──────────────┬──────────────┬──────────────┬──────────────┐
+   │   List       │   Set        │   Queue      │   Map        │
+   ├──────────────┼──────────────┼──────────────┼──────────────┤
+   │ Ordered      │ No dupes     │ FIFO/Priority│ Key→Value    │
+   │ Index access │ Fast lookup  │ Producer/    │ Fast lookup  │
+   │ Allows dupes │              │ Consumer     │ No dupe keys │
+   └──────────────┴──────────────┴──────────────┴──────────────┘
+```
+
+> **FAANG Interview Tip:** At Google, you'll be asked to choose the right collection for a problem, not just define them. Practice: "I need O(1) lookup, insertion order preserved, and no duplicates" → `LinkedHashSet`. Be instant.
+
 
 ### 4.1 Overview — The Big Picture
 
@@ -384,6 +524,33 @@ linkedList.get(0); // O(n) — has to traverse!
 ---
 
 ### 4.3 HashMap Internals
+
+
+```
+HashMap Internal Structure (Java 8+)
+
+   HashMap table (Node<K,V>[] array)
+   ┌───┬───┬───┬───┬───┬───┬───┬───┐
+   │ 0 │ 1 │ 2 │ 3 │ 4 │ 5 │ 6 │ 7 │  ← bucket index = hash(key) & (n-1)
+   └─┬─┴───┴─┬─┴───┴───┴─┬─┴───┴───┘
+     │       │           │
+     ▼       ▼           ▼
+   ┌───┐   ┌───┐       ┌───┐
+   │K:V│   │K:V│       │K:V│  ← Node (linked list)
+   └─┬─┘   └─┬─┘       └─┬─┘
+     │       │           │
+     ▼       ▼           ▼
+   ┌───┐   ┌───┐       ┌───┐
+   │K:V│   │K:V│       │K:V│
+   └───┘   └─┬─┘       └───┘
+             │
+             ▼          When chain length > 8:
+           ┌───┐        Linked List → Red-Black Tree (O(n) → O(log n))
+           │K:V│
+           └───┘        When size > capacity × 0.75 (load factor):
+                        Array doubles in size (rehashing)
+```
+
 
 > **Analogy:** A HashMap is a filing cabinet with 16 drawers (default buckets). The `hashCode()` of your key determines which drawer. The `equals()` check finds the exact file inside the drawer.
 
@@ -479,7 +646,46 @@ while (it.hasNext()) {
 
 ---
 
+
+<details>
+<summary><b>Check Yourself — Exceptions</b></summary>
+
+- What's the difference between `throw` and `throws`?
+- Can you catch an `Error`? Should you? Give one case where you might.
+- What happens if both `catch` and `finally` throw an exception?
+</details>
+
+**Deep Dive — Read More:**
+- [Exception Handling Best Practices (Baeldung)](https://www.baeldung.com/java-exceptions)
+- [Effective Java Item 69-77: Exceptions (Joshua Bloch)](https://www.oreilly.com/library/view/effective-java/9780134686097/)
+
+---
+
 ## 5. Exception Handling
+
+
+```
+                        Throwable
+                     ┌─────┴─────┐
+                     │           │
+                   Error     Exception
+                     │           │
+              ┌──────┤     ┌─────┴──────┐
+              │      │     │            │
+         OutOfMemory Stack  │     RuntimeException
+         Error    Overflow  │     (Unchecked)
+                   Error    │        │
+                            │   ┌────┼──────────┐
+                     IOException │   │          │
+                     SQLException NullPointer  IndexOutOf
+                     (Checked)   Exception    BoundsException
+                     
+   Checked: Compiler forces you to handle (try-catch or throws)
+   Unchecked: RuntimeException subclasses — compiler doesn't enforce
+```
+
+> **FAANG Interview Tip:** Never catch `Exception` or `Throwable` in production code. Interviewers at all FAANG companies will challenge you on this. Catch the most specific exception possible, and explain why.
+
 
 ### 5.1 Exception Hierarchy
 
@@ -602,6 +808,30 @@ void addShapes(List<? super Circle> list) {    // can ADD circles to list
 ---
 
 ## 7. Functional Interfaces
+
+
+```
+   Built-in Functional Interfaces Cheat Sheet
+
+   ┌──────────────────┬──────────────┬──────────────┬─────────────┐
+   │   Interface      │   Input      │   Output     │   Method    │
+   ├──────────────────┼──────────────┼──────────────┼─────────────┤
+   │ Function<T,R>    │   T          │   R          │ apply(T)    │
+   │ BiFunction<T,U,R>│   T, U       │   R          │ apply(T,U)  │
+   │ Predicate<T>     │   T          │   boolean    │ test(T)     │
+   │ Consumer<T>      │   T          │   void       │ accept(T)   │
+   │ Supplier<T>      │   (none)     │   T          │ get()       │
+   │ UnaryOperator<T> │   T          │   T          │ apply(T)    │
+   │ BinaryOperator<T>│   T, T       │   T          │ apply(T,T)  │
+   └──────────────────┴──────────────┴──────────────┴─────────────┘
+
+   Analogy:
+   Function  = a machine (input → different output)
+   Predicate = a filter (input → yes/no)
+   Consumer  = a sink (input → gone, side effect)
+   Supplier  = a factory (nothing → output)
+```
+
 
 ### 7.1 What is a Functional Interface?
 
@@ -730,7 +960,64 @@ greeter.accept("Alice");       // "Hello, Alice"
 
 ---
 
+
+<details>
+<summary><b>Check Yourself — Streams</b></summary>
+
+- What's the difference between `map()` and `flatMap()`? Give a real example where you need `flatMap()`.
+- When should you use `parallelStream()`? When is it harmful?
+- Write a stream pipeline that: reads lines from a file, filters blank lines, converts to uppercase, removes duplicates, sorts, and collects to a List.
+</details>
+
+**Deep Dive — Read More:**
+- [Stream API (Oracle Tutorial)](https://docs.oracle.com/javase/tutorial/collections/streams/)
+- [Collectors Guide (Baeldung)](https://www.baeldung.com/java-8-collectors)
+- [Parallel Streams Pitfalls (DZone)](https://dzone.com/articles/think-twice-using-java-8)
+
+---
+
 ## 9. Streams API
+
+
+```
+   Stream Pipeline Architecture
+
+   Source ──────► Intermediate Ops ──────► Terminal Op ──────► Result
+   (Collection,   (filter, map, sorted,   (collect, forEach,  (List, Map,
+    Array,         flatMap, distinct,       reduce, count,      int, void)
+    File, etc.)    peek, limit, skip)       findFirst, anyMatch)
+
+   ┌──────┐   filter()   ┌──────┐   map()   ┌──────┐  collect()  ┌────────┐
+   │[1,2, │──────────────►│[2,4, │──────────►│[4,8, │────────────►│List    │
+   │ 3,4, │  keep evens   │ 6,8, │  × 2      │12,16,│  toList()   │[4,8,12,│
+   │ 5,6, │               │ 10]  │           │ 20]  │             │ 16,20] │
+   │ 7,8, │               └──────┘           └──────┘             └────────┘
+   │ 9,10]│
+   └──────┘
+   
+   KEY RULES:
+   ✓ Streams are LAZY — nothing executes until a terminal op is called
+   ✓ Streams are single-use — cannot be reused after terminal op
+   ✓ Intermediate ops return a Stream (chainable)
+   ✓ Terminal ops return a non-Stream result (end of pipeline)
+```
+
+> **Real Interview Scenario (Google):** "Given a list of 10 million transactions, filter those above $1000, group by merchant, and return the top 5 merchants by total revenue. Write this using Streams in under 5 minutes."
+
+```java
+Map<String, Double> top5 = transactions.stream()
+    .filter(t -> t.getAmount() > 1000)
+    .collect(Collectors.groupingBy(
+        Transaction::getMerchant,
+        Collectors.summingDouble(Transaction::getAmount)))
+    .entrySet().stream()
+    .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
+    .limit(5)
+    .collect(Collectors.toMap(
+        Map.Entry::getKey, Map.Entry::getValue,
+        (a, b) -> a, LinkedHashMap::new));
+```
+
 
 ### 9.1 What is a Stream?
 
@@ -948,7 +1235,59 @@ Optional<String> maybe   = Optional.ofNullable(null); // safe — returns empty 
 
 ---
 
+
+<details>
+<summary><b>Check Yourself — Concurrency</b></summary>
+
+- What's the difference between `synchronized`, `volatile`, and `Atomic` classes?
+- Write a producer-consumer solution using `BlockingQueue`.
+- You have a counter incremented by 100 threads. It sometimes returns wrong values. Why? Fix it three different ways.
+- What is a happens-before relationship? Why does it matter?
+</details>
+
+**Deep Dive — Read More:**
+- [Java Concurrency in Practice (Brian Goetz)](https://jcip.net/) — the definitive book
+- [Java Concurrency Tutorial (Jenkov)](https://jenkov.com/tutorials/java-concurrency/index.html) — comprehensive free guide
+- [Virtual Threads (JEP 444)](https://openjdk.org/jeps/444) — the future of Java threading
+
+---
+
 ## 11. Multithreading & Concurrency
+
+
+```
+   Thread Lifecycle State Diagram
+
+                    ┌──────────┐
+         new Thread()│          │
+         ──────────►│   NEW    │
+                    │          │
+                    └────┬─────┘
+                         │ .start()
+                         ▼
+                    ┌──────────┐   synchronized    ┌───────────┐
+                    │          │──── (lock busy) ──►│  BLOCKED  │
+                    │ RUNNABLE │                    │(waiting   │
+                    │          │◄── (lock acquired)─│ for lock) │
+                    │(READY or │                    └───────────┘
+                    │ RUNNING) │   .wait() /
+                    │          │── sleep() / ──────►┌───────────┐
+                    │          │   .join()          │  WAITING  │
+                    │          │◄── notify() ───────│  /TIMED   │
+                    └────┬─────┘   /timeout         │  WAITING  │
+                         │                          └───────────┘
+                         │ run() completes
+                         ▼
+                    ┌──────────┐
+                    │TERMINATED│
+                    │          │
+                    └──────────┘
+```
+
+> **FAANG Interview Tip:** Multithreading is the #1 topic where candidates fail at Amazon and Google. Don't just know the theory — be ready to identify race conditions in code snippets, explain why `volatile` alone doesn't make a counter thread-safe, and write a deadlock-free solution on the spot.
+
+> **Real Interview Scenario (Netflix):** "Two threads are transferring money between accounts simultaneously: Thread 1 transfers A→B, Thread 2 transfers B→A. This deadlocks. Explain why and fix it." — Answer: Both threads acquire locks in different orders. Fix: always acquire locks in a consistent global order (e.g., by account ID).
+
 
 ### 11.1 Creating Threads
 
@@ -1190,7 +1529,49 @@ dateFormat.remove(); // important: clean up to prevent memory leaks in thread po
 
 ---
 
+
+<details>
+<summary><b>Check Yourself — CompletableFuture</b></summary>
+
+- What's the difference between `thenApply()` and `thenCompose()`?
+- How do you handle errors in a CompletableFuture chain?
+- When would you use `allOf()` vs `anyOf()`?
+</details>
+
+**Deep Dive — Read More:**
+- [CompletableFuture Guide (Baeldung)](https://www.baeldung.com/java-completablefuture)
+- [Async Programming (Java Brains)](https://www.youtube.com/watch?v=ImtZgX1nmr8)
+
+---
+
 ## 12. Async Programming – CompletableFuture
+
+
+```
+   CompletableFuture Chaining Flow
+
+   supplyAsync()──►thenApply()──►thenApply()──►thenAccept()
+        │               │             │              │
+   ┌────▼────┐    ┌─────▼─────┐ ┌────▼─────┐  ┌────▼────┐
+   │Runs on  │    │Transform  │ │Transform │  │Consume  │
+   │ForkJoin │───►│result     │►│again     │─►│final    │
+   │pool     │    │(non-block)│ │          │  │result   │
+   └─────────┘    └───────────┘ └──────────┘  └─────────┘
+
+   Error Handling:
+   supplyAsync()──►thenApply()──►exceptionally()──►thenAccept()
+                        │              │
+                   Exception?     Fallback value
+                   
+   Combining:
+   future1 ─┐
+             ├──►thenCombine()──► combined result
+   future2 ─┘
+
+   allOf(f1, f2, f3) = wait for ALL    (like CountDownLatch)
+   anyOf(f1, f2, f3) = wait for FIRST  (like a race)
+```
+
 
 ### 12.1 What is CompletableFuture?
 
@@ -1281,7 +1662,41 @@ String winner = (String) fastest.get();
 
 ---
 
+
+<details>
+<summary><b>Check Yourself — Modern Java</b></summary>
+
+- Rewrite a traditional POJO (constructor, getters, equals, hashCode, toString) as a Record. What can't Records do?
+- What problem do sealed classes solve? How are they different from `final`?
+- When would you use virtual threads vs platform threads? What are the caveats?
+- Convert a 10-line if/else chain into a switch expression with pattern matching.
+</details>
+
+**Deep Dive — Read More:**
+- [Records (JEP 395)](https://openjdk.org/jeps/395)
+- [Sealed Classes (JEP 409)](https://openjdk.org/jeps/409)
+- [Virtual Threads (JEP 444)](https://openjdk.org/jeps/444)
+- [Pattern Matching (JEP 441)](https://openjdk.org/jeps/441)
+- [Modern Java in Action (Manning)](https://www.manning.com/books/modern-java-in-action)
+
+---
+
 ## 13. Modern Java (Java 9–21)
+
+> **FAANG Interview Tip:** Modern Java features are increasingly tested. At Meta and Google, interviewers want to see you naturally reach for `records`, `sealed classes`, `pattern matching`, and `virtual threads` instead of old patterns. Show you write *modern* Java, not 2010 Java.
+
+**Before / After: The Evolution of Java**
+
+```
+   Java 8 (2014)           Java 17 (2021)           Java 21 (2023)
+   ─────────────           ──────────────           ──────────────
+   Lambdas & Streams       Records                  Virtual Threads
+   Optional                Sealed Classes           Sequenced Collections
+   Default methods         Pattern Matching          Record Patterns
+   java.time               Text Blocks              String Templates
+   CompletableFuture       Switch Expressions       Scoped Values
+```
+
 
 ### 13.1 var — Local Variable Type Inference (Java 10)
 
@@ -1537,7 +1952,64 @@ String html = """
 
 ---
 
+
+<details>
+<summary><b>Check Yourself — JVM & GC</b></summary>
+
+- Explain the difference between Minor GC, Major GC, and Full GC. Which causes stop-the-world pauses?
+- What JVM flags would you use to diagnose a memory leak? Walk through your investigation process.
+- When would you choose ZGC over G1GC?
+</details>
+
+**Deep Dive — Read More:**
+- [G1 Garbage Collector (Oracle)](https://docs.oracle.com/en/java/javase/21/gctuning/)
+- [ZGC (OpenJDK)](https://wiki.openjdk.org/display/zgc/Main)
+- [JVM Tuning Guide (Baeldung)](https://www.baeldung.com/jvm-tuning-flags)
+- [GC Logging & Analysis (GCEasy)](https://gceasy.io/)
+
+---
+
 ## 14. JVM Internals & Garbage Collection
+
+
+```
+   JVM Memory Layout
+
+   ┌─────────────────────────────────────────────────┐
+   │                    HEAP                          │
+   │  ┌───────────────────────┐  ┌────────────────┐  │
+   │  │    Young Generation   │  │ Old Generation │  │
+   │  │  ┌─────┐ ┌───┐ ┌───┐ │  │  (Tenured)     │  │
+   │  │  │Eden │ │S0 │ │S1 │ │  │                │  │
+   │  │  │     │ │   │ │   │ │  │  Long-lived    │  │
+   │  │  │ New │ │Sur│ │Sur│ │  │  objects end    │  │
+   │  │  │ obj │ │viv│ │viv│ │  │  up here       │  │
+   │  │  └─────┘ └───┘ └───┘ │  │                │  │
+   │  └───────────────────────┘  └────────────────┘  │
+   │            Minor GC ▲              Major GC ▲   │
+   └─────────────────────────────────────────────────┘
+   ┌─────────────────────────────────────────────────┐
+   │                  NON-HEAP                        │
+   │  ┌─────────────┐  ┌──────────┐  ┌───────────┐  │
+   │  │ Metaspace   │  │ Code     │  │ Thread    │  │
+   │  │ (class meta)│  │ Cache    │  │ Stacks    │  │
+   │  └─────────────┘  │ (JIT)    │  │ (per-     │  │
+   │                    └──────────┘  │  thread)  │  │
+   │                                  └───────────┘  │
+   └─────────────────────────────────────────────────┘
+
+   GC Algorithm Comparison:
+   ┌─────────────┬────────────┬───────────┬──────────────┐
+   │ Collector   │ Throughput │ Latency   │ Best For     │
+   ├─────────────┼────────────┼───────────┼──────────────┤
+   │ Serial      │ Low        │ High      │ Small apps   │
+   │ Parallel    │ High       │ Medium    │ Batch jobs   │
+   │ G1 (default)│ Good       │ Low       │ General use  │
+   │ ZGC         │ Good       │ Ultra-low │ Large heaps  │
+   │ Shenandoah  │ Good       │ Ultra-low │ Large heaps  │
+   └─────────────┴────────────┴───────────┴──────────────┘
+```
+
 
 ### 14.1 JVM Memory Areas
 
@@ -1594,7 +2066,26 @@ if (obj == null) { /* cache miss — reload */ }
 
 ---
 
+
+<details>
+<summary><b>Check Yourself — Design Patterns</b></summary>
+
+- Implement Singleton five ways. Which is thread-safe? Which is lazy? Which is the best?
+- When would you use Strategy over Template Method?
+- Explain the Builder pattern. Why is it better than telescoping constructors?
+</details>
+
+**Deep Dive — Read More:**
+- [Design Patterns (Refactoring.Guru)](https://refactoring.guru/design-patterns/java) — visual guide
+- [Head First Design Patterns](https://www.oreilly.com/library/view/head-first-design/9781492077992/)
+- [Effective Java (Joshua Bloch)](https://www.oreilly.com/library/view/effective-java/9780134686097/) — pattern-heavy
+
+---
+
 ## 15. Design Patterns in Java
+
+> **Real Interview Scenario (Meta):** "Implement a thread-safe Singleton that is lazy-loaded, serialization-safe, and reflection-proof." — Answer: Use an `enum`. It's the only approach that handles all three automatically. Bill Pugh's inner class holder handles the first two but not reflection.
+
 
 ### 15.1 Singleton
 
